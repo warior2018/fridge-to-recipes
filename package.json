@@ -1,0 +1,13 @@
+{
+  "name": "fridge-to-recipes",
+  "version": "1.0.0",
+  "description": "CLI that suggests 3 recipes from the ingredients in your fridge using an LLM API",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "license": "MIT"
+}
