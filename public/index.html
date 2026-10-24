@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fridge-to-Recipes</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 760px; margin: 0 auto; padding: 24px 16px; background: #f6f6f4; color: #222; }
+    h1 { margin: 0 0 4px; }
+    .sub { color: #666; margin: 0 0 20px; }
+    form, .card { background: #fff; border: 1px solid #e3e3e0; border-radius: 10px; padding: 16px; }
+    form { display: grid; gap: 12px; }
+    label { display: grid; gap: 4px; font-size: 14px; color: #444; }
+    input { padding: 8px 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 6px; }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    button { padding: 10px; font-size: 15px; border: 0; border-radius: 6px; background: #2f7d32; color: #fff; cursor: pointer; }
+    button:disabled { background: #999; cursor: wait; }
+    .status { margin: 16px 0; color: #555; }
+    .error { color: #b00020; }
+    .card { margin-bottom: 16px; }
+    .card h2 { margin: 0 0 4px; font-size: 20px; }
+    .card h3 { margin: 16px 0 6px; font-size: 16px; }
+    .meta { color: #666; font-size: 14px; }
+    ul { padding-left: 0; list-style: none; margin: 0; }
+    ul li { margin-bottom: 4px; }
+    li.have::before { content: "✓ "; color: #2f7d32; }
+    li.missing { color: #b00020; }
+    li.missing::before { content: "✗ "; }
+    ol { padding-left: 20px; margin: 0; }
+    ol li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Fridge-to-Recipes</h1>
+  <p class="sub">Write what is in your fridge and get 3 recipe ideas.</p>
+
+  <form id="form">
+    <label>Ingredients (comma-separated) *
+      <input name="ingredients" placeholder="eggs, tomato, cheese" required>
+    </label>
+    <div class="row">
+      <label>Diet <input name="diet" placeholder="vegetarian"></label>
+      <label>Cuisine <input name="cuisine" placeholder="italian"></label>
+      <label>Max time (min) <input name="time" type="number" min="1"></label>
+      <label>Servings <input name="servings" type="number" min="1"></label>
+    </div>
+    <button type="submit">Find recipes</button>
+  </form>
+
+  <p id="status" class="status"></p>
+  <div id="results"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,71 +1,55 @@
 # Fridge-to-Recipes
 
-A command-line app that takes the ingredients you have on hand plus optional
-constraints (diet, cuisine, max cook time, servings) and asks an LLM for
-**three recipe suggestions**. For each recipe it prints the title, the full
-ingredient list with items **missing from your fridge** marked, step-by-step
-instructions and an estimated cook time.
+Give the app the ingredients in your fridge (and optional diet, cuisine, max time, servings),
+and it asks an AI for **3 recipes**: title, cook time, ingredients with **missing** items marked, and steps.
 
-No dependencies: plain Node.js using the built-in `fetch`.
+**How it works:** the app builds a prompt, sends it to an OpenAI-compatible AI API
+(tested with Google Gemini), gets the recipes back as JSON and checks which ingredients you don't have.
+If the API fails for a short time, it retries (up to 3 attempts).
+
+## Two versions
+
+- **CLI** (`app.js`) — run a command, recipes are printed in the terminal.
+- **Web UI** (`server.js`, bonus) — a small local page made with Express.
+
+Both use the same logic from `recipes.js`.
 
 ## Setup
 
-1. Install **Node.js 20.12 or newer** (`node -v` to check).
-2. Clone the repo and go into the folder:
-   ```bash
-   git clone <repo-url>
-   cd fridge-to-recipes
-   ```
-3. Create your `.env` from the example and put your API key in it:
-   ```bash
-   cp .env.example .env
-   ```
-   `.env` is listed in `.gitignore`, so the key is never committed.
+```bash
+git clone https://github.com/warior2018/fridge-to-recipes.git
+cd fridge-to-recipes
+npm install
+cp .env.example .env
+```
+
+Needs Node.js 20.12+.
 
 ## Environment variables
 
-| Variable          | Required | Default                     | Meaning                                   |
-|-------------------|----------|-----------------------------|-------------------------------------------|
-| `OPENAI_API_KEY`  | yes      | –                           | API key for the LLM provider              |
-| `OPENAI_MODEL`    | no       | `gpt-4o-mini`               | Model name                                |
-| `OPENAI_BASE_URL` | no       | `https://api.openai.com/v1` | Any OpenAI-compatible Chat Completions API |
-
-Variables can live in `.env` (loaded automatically) or be exported in the shell.
-
-### Using Google Gemini (free tier)
-
-The example run below uses Gemini through its OpenAI-compatible endpoint.
-Get a free key at https://aistudio.google.com ("Get API key") and set:
+Put them in `.env` (it is in `.gitignore`, never committed):
 
 ```
-OPENAI_API_KEY=your-gemini-key
+OPENAI_API_KEY=your-key
 OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
 OPENAI_MODEL=gemini-3.8-flash
 ```
 
-## Usage
+Only `OPENAI_API_KEY` is required. Free Gemini key: https://aistudio.google.com.
+Without the other two, the app uses OpenAI (`gpt-4o-mini`).
 
+## Run
+
+**CLI:**
 ```bash
-node app.js --ingredients "eggs, tomato, cheese" [--diet vegetarian] [--cuisine italian] [--time 20] [--servings 2]
-node app.js --help
+node app.js --ingredients "eggs, tomato" [--diet vegetarian] [--cuisine italian] [--time 20] [--servings 2]
 ```
 
-Only `--ingredients` is required; any subset of the constraints can be added.
-
-## How it works
-
-1. **Arguments** are parsed from `process.argv` and validated (empty list,
-   non-numeric time/servings, unknown options → clear error, exit code 1).
-2. **Prompt**: the ingredients and constraints are turned into a prompt that
-   asks the model to answer with JSON in a fixed shape (JSON mode is enabled).
-3. **API call** with a 60 s timeout.
-4. **Retry**: network errors, timeouts, `429` and `5xx` responses, and invalid
-   or incomplete JSON are retried up to 3 attempts total with exponential
-   backoff (1 s, 2 s). Permanent errors (`401` wrong key, no credits, other
-   `4xx`) fail immediately with a readable message.
-5. **Missing ingredients** are decided by the app itself, not by the model:
-   each recipe ingredient is compared word by word against your fridge list
-   (`cheese` matches `grated cheese`, `tomato` matches `tomatoes`).
+**Web UI:**
+```bash
+npm run web
+```
+Then open http://localhost:3000.
 
 ## Example run
 
